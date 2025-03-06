@@ -20,24 +20,24 @@ public class UserServiceImp implements IUserService {
     @Override
     @Transactional(readOnly = true)
     public List<User> findAll() {
-        return List.of();
+        return userRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
     public Optional<User> findById(Long id) {
-        return Optional.empty();
+        return userRepository.findById(id);
     }
 
     @Override
     @Transactional
     public User save(User user) {
-        return null;
+        return userRepository.save(user);
     }
 
     @Override
     @Transactional
     public void deleteById(Long id) {
-
+        userRepository.deleteById(id);
     }
 }
