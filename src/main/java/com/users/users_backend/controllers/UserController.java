@@ -2,11 +2,15 @@ package com.users.users_backend.controllers;
 
 import com.users.users_backend.entities.User;
 import com.users.users_backend.services.IUserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @CrossOrigin(origins = {"http://localhost:4200"})
@@ -35,12 +39,18 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<User> save(@RequestBody User user) {
+    public ResponseEntity<?> save(@Valid @RequestBody User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return validation(bindingResult);
+        }
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<User> update(@PathVariable Long id, @RequestBody User user) {
+    public ResponseEntity<?> update(@PathVariable Long id,@Valid @RequestBody User user, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return validation(bindingResult);
+        }
         Optional<User> optionalUser = userService.findById(id);
         if (optionalUser.isPresent()) {
             User updatedUser = optionalUser.get();
@@ -63,6 +73,14 @@ public class UserController {
         }else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    private static ResponseEntity<Map<String, String>> validation(BindingResult bindingResult) {
+        Map<String, String> errors = new HashMap<>();
+        bindingResult.getFieldErrors().forEach(error -> {
+            errors.put(error.getField(), error.getDefaultMessage());
+        });
+        return ResponseEntity.badRequest().body(errors);
     }
 
 }
