@@ -1,9 +1,13 @@
 package com.users.users_backend.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -31,15 +35,31 @@ public class User {
     @Size(min = 8)
     private String password;
 
+    @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "user_rol",
+            joinColumns = @JoinColumn(
+                    name = "id_user"
+            ),
+            inverseJoinColumns = @JoinColumn(
+                    name = "id_rol"
+            ),
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"id_user","id_rol"})}
+    )
+    private List<Role> roles;
+
     public User() {
+        this.roles = new ArrayList<>();
     }
 
-    public User(String email, Long id, String lastName, String name, String password, String username) {
+    public User(String email, Long id, String lastName, String name, String password, List<Role> roles, String username) {
         this.email = email;
         this.id = id;
         this.lastName = lastName;
         this.name = name;
         this.password = password;
+        this.roles = roles;
         this.username = username;
     }
 
@@ -89,5 +109,13 @@ public class User {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 }
