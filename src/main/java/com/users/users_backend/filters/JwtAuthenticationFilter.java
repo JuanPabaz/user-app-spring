@@ -2,6 +2,7 @@ package com.users.users_backend.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.users.users_backend.entities.UserEntity;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -11,15 +12,17 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.users.users_backend.config.TokenJwtConfig.SECRET_KEY;
+import static com.users.users_backend.config.TokenJwtConfig.*;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -49,19 +52,27 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
         User user = (User) authResult.getPrincipal();
         String username = user.getUsername();
+        Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
+
+        Claims claims = Jwts
+                .claims()
+                .add("authorities",new ObjectMapper().writeValueAsString(authorities))
+                .build();
+
         String jwt = Jwts.builder()
                 .subject(username)
                 .signWith(SECRET_KEY)
                 .issuedAt(new Date())
+                .claims(claims)
                 .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .compact();
-        response.addHeader("Authorization", "Bearer " + jwt);
+        response.addHeader(HEADER_AUTHORIZATION,TOKEN_PREFIX + jwt);
         Map<String, String> body = new HashMap<>();
         body.put("token", jwt);
         body.put("username", username);
         body.put("message","Sesión iniciada exitosamente");
         response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-        response.setContentType("application/json");
+        response.setContentType(CONTENT_TYPE);
         response.setStatus(200);
     }
 
