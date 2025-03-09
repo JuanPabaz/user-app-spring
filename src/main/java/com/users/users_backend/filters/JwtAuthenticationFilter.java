@@ -15,6 +15,9 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.users.users_backend.config.TokenJwtConfig.SECRET_KEY;
 
@@ -49,7 +52,17 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String jwt = Jwts.builder()
                 .subject(username)
                 .signWith(SECRET_KEY)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 3600000))
                 .compact();
+        response.addHeader("Authorization", "Bearer " + jwt);
+        Map<String, String> body = new HashMap<>();
+        body.put("token", jwt);
+        body.put("username", username);
+        body.put("message","Sesión iniciada exitosamente");
+        response.getWriter().write(new ObjectMapper().writeValueAsString(body));
+        response.setContentType("application/json");
+        response.setStatus(200);
     }
 
     @Override
