@@ -1,6 +1,6 @@
 package com.users.users_backend.controllers;
 
-import com.users.users_backend.entities.User;
+import com.users.users_backend.entities.UserEntity;
 import com.users.users_backend.services.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -28,19 +28,19 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         return userService.findAll();
     }
 
     @GetMapping("/page")
-    public Page<User> findAllPageable(@RequestParam Integer page) {
+    public Page<UserEntity> findAllPageable(@RequestParam Integer page) {
         Pageable pageable = PageRequest.of(page, 4);
         return userService.findAllUsers(pageable);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable Long id) {
-        Optional<User> user = userService.findById(id);
+    public ResponseEntity<UserEntity> findById(@PathVariable Long id) {
+        Optional<UserEntity> user = userService.findById(id);
         if (user.isPresent()) {
             return ResponseEntity.ok(user.get());
         }
@@ -48,34 +48,34 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseEntity<?> save(@Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> save(@Valid @RequestBody UserEntity userEntity, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return validation(bindingResult);
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(user));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.save(userEntity));
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id,@Valid @RequestBody User user, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody UserEntity userEntity, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return validation(bindingResult);
         }
-        Optional<User> optionalUser = userService.findById(id);
+        Optional<UserEntity> optionalUser = userService.findById(id);
         if (optionalUser.isPresent()) {
-            User updatedUser = optionalUser.get();
-            updatedUser.setName(user.getName());
-            updatedUser.setLastName(user.getLastName());
-            updatedUser.setUsername(user.getUsername());
-            updatedUser.setEmail(user.getEmail());
-            updatedUser.setPassword(user.getPassword());
-            return ResponseEntity.status(HttpStatus.OK).body(userService.save(updatedUser));
+            UserEntity updatedUserEntity = optionalUser.get();
+            updatedUserEntity.setName(userEntity.getName());
+            updatedUserEntity.setLastName(userEntity.getLastName());
+            updatedUserEntity.setUsername(userEntity.getUsername());
+            updatedUserEntity.setEmail(userEntity.getEmail());
+            updatedUserEntity.setPassword(userEntity.getPassword());
+            return ResponseEntity.status(HttpStatus.OK).body(userService.save(updatedUserEntity));
         }
         return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<User> delete(@PathVariable Long id) {
-        Optional<User> optionalUser = userService.findById(id);
+    public ResponseEntity<UserEntity> delete(@PathVariable Long id) {
+        Optional<UserEntity> optionalUser = userService.findById(id);
         if (optionalUser.isPresent()) {
             userService.deleteById(id);
             return ResponseEntity.noContent().build();

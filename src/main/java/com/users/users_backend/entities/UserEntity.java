@@ -11,7 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -49,11 +49,11 @@ public class User {
     )
     private List<Role> roles;
 
-    public User() {
+    public UserEntity() {
         this.roles = new ArrayList<>();
     }
 
-    public User(String email, Long id, String lastName, String name, String password, List<Role> roles, String username) {
+    public UserEntity(String email, Long id, String lastName, String name, String password, List<Role> roles, String username) {
         this.email = email;
         this.id = id;
         this.lastName = lastName;

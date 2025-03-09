@@ -1,6 +1,6 @@
 package com.users.users_backend.services;
 
-import com.users.users_backend.entities.User;
+import com.users.users_backend.entities.UserEntity;
 import com.users.users_backend.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,20 +21,20 @@ public class UserServiceImp implements IUserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<User> findAll() {
+    public List<UserEntity> findAll() {
         return userRepository.findAll();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Optional<User> findById(Long id) {
+    public Optional<UserEntity> findById(Long id) {
         return userRepository.findById(id);
     }
 
     @Override
     @Transactional
-    public User save(User user) {
-        return userRepository.save(user);
+    public UserEntity save(UserEntity userEntity) {
+        return userRepository.save(userEntity);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class UserServiceImp implements IUserService {
 
     @Override
     @Transactional
-    public Page<User> findAllUsers(Pageable pageable) {
+    public Page<UserEntity> findAllUsers(Pageable pageable) {
         return userRepository.findAll(pageable);
     }
 }
