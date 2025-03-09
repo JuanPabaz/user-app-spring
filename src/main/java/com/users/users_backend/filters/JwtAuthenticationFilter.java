@@ -1,7 +1,8 @@
 package com.users.users_backend.filters;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.users.users_backend.entities.User;
+import com.users.users_backend.entities.UserEntity;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +11,12 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+
+import static com.users.users_backend.config.TokenJwtConfig.SECRET_KEY;
 
 public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -27,9 +31,9 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
         String username = null;
         String password = null;
         try {
-            User user = new ObjectMapper().readValue(request.getInputStream(), User.class);
-            username = user.getUsername();
-            password = user.getPassword();
+            UserEntity userEntity = new ObjectMapper().readValue(request.getInputStream(), UserEntity.class);
+            username = userEntity.getUsername();
+            password = userEntity.getPassword();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -40,7 +44,12 @@ public class JwtAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        super.successfulAuthentication(request, response, chain, authResult);
+        User user = (User) authResult.getPrincipal();
+        String username = user.getUsername();
+        String jwt = Jwts.builder()
+                .subject(username)
+                .signWith(SECRET_KEY)
+                .compact();
     }
 
     @Override
