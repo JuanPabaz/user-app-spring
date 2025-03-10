@@ -1,6 +1,7 @@
 package com.users.users_backend.services;
 
 import com.users.users_backend.entities.UserEntity;
+import com.users.users_backend.models.UserRequest;
 import com.users.users_backend.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -49,15 +50,14 @@ public class UserServiceImp implements IUserService {
 
     @Override
     @Transactional
-    public Optional<UserEntity> update(UserEntity userEntity, Long id) {
+    public Optional<UserEntity> update(UserRequest userRequest, Long id) {
         Optional<UserEntity> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             UserEntity updatedUserEntity = optionalUser.get();
-            updatedUserEntity.setName(userEntity.getName());
-            updatedUserEntity.setLastName(userEntity.getLastName());
-            updatedUserEntity.setUsername(userEntity.getUsername());
-            updatedUserEntity.setEmail(userEntity.getEmail());
-            updatedUserEntity.setPassword(userEntity.getPassword());
+            updatedUserEntity.setName(userRequest.getName());
+            updatedUserEntity.setLastName(userRequest.getLastName());
+            updatedUserEntity.setUsername(userRequest.getUsername());
+            updatedUserEntity.setEmail(userRequest.getEmail());
             return Optional.of(userRepository.save(updatedUserEntity));
         }
         return Optional.empty();

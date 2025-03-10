@@ -1,6 +1,7 @@
 package com.users.users_backend.services;
 
 import com.users.users_backend.entities.UserEntity;
+import com.users.users_backend.models.UserRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -12,6 +13,6 @@ public interface IUserService {
     Optional<UserEntity> findById(Long id);
     UserEntity save(UserEntity userEntity);
     void deleteById(Long id);
-    Optional<UserEntity> update(UserEntity userEntity, Long id);
+    Optional<UserEntity> update(UserRequest userRequest, Long id);
     Page<UserEntity> findAllUsers(Pageable pageable);
 }

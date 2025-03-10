@@ -1,6 +1,7 @@
 package com.users.users_backend.controllers;
 
 import com.users.users_backend.entities.UserEntity;
+import com.users.users_backend.models.UserRequest;
 import com.users.users_backend.services.IUserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -53,11 +54,11 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody UserEntity userEntity, BindingResult bindingResult) {
+    public ResponseEntity<?> update(@PathVariable Long id, @Valid @RequestBody UserRequest userRequest, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return validation(bindingResult);
         }
-        Optional<UserEntity> optionalUser = userService.update(userEntity,id);
+        Optional<UserEntity> optionalUser = userService.update(userRequest,id);
         if (optionalUser.isPresent()) {
             return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
         }
