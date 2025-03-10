@@ -18,8 +18,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @Configuration
 public class SecurityConfig {
 
-    @Autowired
-    private AuthenticationConfiguration authenticationConfiguration;
+    private final AuthenticationConfiguration authenticationConfiguration;
+
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
+        this.authenticationConfiguration = authenticationConfiguration;
+    }
 
     @Bean
     public AuthenticationManager authenticationManager() throws Exception {
