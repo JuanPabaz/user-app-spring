@@ -43,10 +43,7 @@ public class UserServiceImp implements IUserService {
     @Override
     @Transactional
     public UserEntity save(UserEntity userEntity) {
-        List<Role> roles = new ArrayList<>();
-        Optional<Role> optionalRole = rolRepository.findByRole("ROLE_USER");
-        optionalRole.ifPresent(roles::add);
-        userEntity.setRoles(roles);
+        userEntity.setRoles(getRoles(userEntity.isAdmin()));
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         return userRepository.save(userEntity);
     }
@@ -67,9 +64,25 @@ public class UserServiceImp implements IUserService {
             updatedUserEntity.setLastName(userRequest.getLastName());
             updatedUserEntity.setUsername(userRequest.getUsername());
             updatedUserEntity.setEmail(userRequest.getEmail());
+
+            updatedUserEntity.setRoles(getRoles(userRequest.isAdmin()));
+
             return Optional.of(userRepository.save(updatedUserEntity));
         }
         return Optional.empty();
+    }
+
+    private List<Role> getRoles(boolean isAdmin) {
+        List<Role> roles = new ArrayList<>();
+        Optional<Role> optionalRole = rolRepository.findByRole("ROLE_USER");
+        optionalRole.ifPresent(roles::add);
+
+        if (isAdmin) {
+            Optional<Role> optionalAdminRole = rolRepository.findByRole("ROLE_ADMIN");
+            optionalAdminRole.ifPresent(roles::add);
+        }
+
+        return roles;
     }
 
     @Override
