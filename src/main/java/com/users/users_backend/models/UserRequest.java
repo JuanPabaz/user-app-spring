@@ -20,14 +20,17 @@ public class UserRequest {
     @Size(min = 8)
     private String username;
 
+    private boolean admin;
+
     public UserRequest() {
     }
 
-    public UserRequest(String name, String lastName, String email, String username) {
+    public UserRequest(String name, String lastName, String email, String username, boolean admin) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.username = username;
+        this.admin = admin;
     }
 
     public String getName() {
@@ -60,5 +63,13 @@ public class UserRequest {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }

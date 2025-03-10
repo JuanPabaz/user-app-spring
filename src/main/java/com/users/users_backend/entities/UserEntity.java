@@ -1,6 +1,7 @@
 package com.users.users_backend.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -35,6 +36,10 @@ public class UserEntity {
     @Size(min = 8)
     private String password;
 
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private boolean admin;
+
     @JsonIgnoreProperties({"handler","hibernateLazyInitializer"})
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
@@ -53,14 +58,15 @@ public class UserEntity {
         this.roles = new ArrayList<>();
     }
 
-    public UserEntity(String email, Long id, String lastName, String name, String password, List<Role> roles, String username) {
-        this.email = email;
+    public UserEntity(Long id, String name, String lastName, String email, String username, String password, boolean admin, List<Role> roles) {
         this.id = id;
-        this.lastName = lastName;
         this.name = name;
-        this.password = password;
-        this.roles = roles;
+        this.lastName = lastName;
+        this.email = email;
         this.username = username;
+        this.password = password;
+        this.admin = admin;
+        this.roles = roles;
     }
 
     public String getEmail() {
@@ -117,5 +123,13 @@ public class UserEntity {
 
     public void setRoles(List<Role> roles) {
         this.roles = roles;
+    }
+
+    public boolean isAdmin() {
+        return admin;
+    }
+
+    public void setAdmin(boolean admin) {
+        this.admin = admin;
     }
 }
