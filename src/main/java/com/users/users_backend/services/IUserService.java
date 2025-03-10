@@ -12,5 +12,6 @@ public interface IUserService {
     Optional<UserEntity> findById(Long id);
     UserEntity save(UserEntity userEntity);
     void deleteById(Long id);
+    Optional<UserEntity> update(UserEntity userEntity, Long id);
     Page<UserEntity> findAllUsers(Pageable pageable);
 }

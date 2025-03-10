@@ -57,15 +57,9 @@ public class UserController {
         if (bindingResult.hasErrors()) {
             return validation(bindingResult);
         }
-        Optional<UserEntity> optionalUser = userService.findById(id);
+        Optional<UserEntity> optionalUser = userService.update(userEntity,id);
         if (optionalUser.isPresent()) {
-            UserEntity updatedUserEntity = optionalUser.get();
-            updatedUserEntity.setName(userEntity.getName());
-            updatedUserEntity.setLastName(userEntity.getLastName());
-            updatedUserEntity.setUsername(userEntity.getUsername());
-            updatedUserEntity.setEmail(userEntity.getEmail());
-            updatedUserEntity.setPassword(userEntity.getPassword());
-            return ResponseEntity.status(HttpStatus.OK).body(userService.save(updatedUserEntity));
+            return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
         }
         return ResponseEntity.notFound().build();
     }
