@@ -1,7 +1,9 @@
 package com.users.users_backend.services;
 
+import com.users.users_backend.entities.Role;
 import com.users.users_backend.entities.UserEntity;
 import com.users.users_backend.models.UserRequest;
+import com.users.users_backend.repositories.RolRepository;
 import com.users.users_backend.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -9,6 +11,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,10 +20,12 @@ public class UserServiceImp implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RolRepository rolRepository;
 
-    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, RolRepository rolRepository) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.rolRepository = rolRepository;
     }
 
     @Override
@@ -38,6 +43,10 @@ public class UserServiceImp implements IUserService {
     @Override
     @Transactional
     public UserEntity save(UserEntity userEntity) {
+        List<Role> roles = new ArrayList<>();
+        Optional<Role> optionalRole = rolRepository.findByRole("ROLE_USER");
+        optionalRole.ifPresent(roles::add);
+        userEntity.setRoles(roles);
         userEntity.setPassword(passwordEncoder.encode(userEntity.getPassword()));
         return userRepository.save(userEntity);
     }
